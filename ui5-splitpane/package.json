@@ -11,6 +11,8 @@
         "Other"
     ],
     "activationEvents": [
+        "onLanguage:xml",
+        "onLanguage:js",
         "onCommand:extension.sayHello"
     ],
     "main": "./out/src/extension",
@@ -18,6 +20,9 @@
         "commands": [{
             "command": "extension.sayHello",
             "title": "Hello World"
+        },{
+            "command": "extension.crap",
+            "title": "Crap"
         }]
     },
     "scripts": {
