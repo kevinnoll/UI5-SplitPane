@@ -11,6 +11,9 @@ export function activate(context: vscode.ExtensionContext) {
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "ui5-splitpane" is now active!');
 
+    vscode.workspace.getConfiguration().update("workbench.editor.enablePreview", false);
+    vscode.workspace.getConfiguration().update("workbench.editor.enablePreviewFromQuickOpen", false);
+
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
@@ -29,51 +32,42 @@ export function activate(context: vscode.ExtensionContext) {
                 viewName = controllerNameWithoutSuffix + ".view.xml",
                 searchString = "**/" + viewName;
 
-            // ignore sibling file.
-            if (this.filesToIgnore.indexOf(controllerNameWithoutSuffix) !== -1) {
-                this.filesToIgnore.splice(this.filesToIgnore.indexOf(controllerNameWithoutSuffix), 1);
-                return;
-            }
-
             vscode.workspace.findFiles(searchString).then((file) => {
                 if (file[0]) {
                     vscode.workspace.openTextDocument(file[0]).then((textDocument: vscode.TextDocument) => {
                         vscode.window.showTextDocument(textDocument, vscode.ViewColumn.Two, true);
-                        this.filesToIgnore.push(viewName);
-                    });
+                   });
                 }
             })
         }
 
         if (this.isView(e)) {
             let viewName = this.getFileName(e.fileName),
-                viewNameWithoutSuffix = viewName.slice(0, viewName.length - 14),
+                viewNameWithoutSuffix = viewName.slice(0, viewName.length - 9),
                 controllerName = viewNameWithoutSuffix + ".controller.js",
                 searchString = "**/" + controllerName;
-
-            // ignore sibling file.
-            if (this.filesToIgnore.indexOf(viewNameWithoutSuffix) !== -1) {
-                this.filesToIgnore.splice(this.filesToIgnore.indexOf(viewNameWithoutSuffix), 1);
-                return;
-            }
 
             vscode.workspace.findFiles(searchString).then((controllers) => {
                 if (controllers[0]) {
                     vscode.workspace.openTextDocument(controllers[0]).then((textDocument: vscode.TextDocument) => {
-                        vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One, false);
-                        this.filesToIgnore.push(controllerName);
+                        vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One, true).then((editor) => {
+                            vscode.window.showTextDocument(e,vscode.ViewColumn.Two, true).then((textEditor: vscode.TextEditor) => {
+                               /* for (var i = 0; i < vscode.window.visibleTextEditors.length; i++) {
+                                    debugger;
+                                    vscode.workspace.textDocuments;
+                                    if (vscode.window.visibleTextEditors[i].viewColumn === 1) {
+                                        if (vscode.window.visibleTextEditors[i]) {
 
-                        vscode.workspace.findFiles(viewName).then((controllers) => {
-                            if (controllers[0]) {
-                                vscode.window.showTextDocument(textDocument, vscode.ViewColumn.Two, true);
-                                this.filesToIgnore.push(viewName);
-                            }
+                                        }
+                                    }
+                                } */
+                            });
                         });
+                        
                     });
                 }
             })
         }
-
     });
 
     this.isController = function (textDocument: vscode.TextDocument) {
