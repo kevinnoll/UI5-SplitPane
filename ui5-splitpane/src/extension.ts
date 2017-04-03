@@ -24,18 +24,38 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Hello World!');
     });
 
-    this.filesToIgnore = [];
-    vscode.workspace.onDidOpenTextDocument((e: vscode.TextDocument) => {
+    this.isFileOfInterest = function(textDocument: vscode.TextDocument) {
+        return textDocument.fileName.endsWith(".view.xml") || textDocument.fileName.endsWith(".controller.js");
+    }
+
+    this.isSingleMode = function () {
+        return vscode.window.visibleTextEditors.length === 1;
+    } 
+
+    vscode.workspace.onDidOpenTextDocument((textDocument: vscode.TextDocument) => {
+        if (this.isFileOfInterest(textDocument) && this.isSingleMode()) {
+            vscode.commands.executeCommand("workbench.action.splitEditor");
+        }
+
+        if (textDocument.fileName.endsWith(".view.xml")) {
+            vscode.commands.executeCommand("workbench.action.moveActiveEditorGroupRight");
+        } 
+        if (textDocument.fileName.endsWith(".controller.js")) {
+            vscode.commands.executeCommand("workbench.action.moveActiveEditorGroupLeft  ");
+        } 
+
+/*
         if (this.isController(e)) {
             let controllerName = this.getFileName(e.fileName),
                 controllerNameWithoutSuffix = controllerName.slice(0, controllerName.length - 14),
                 viewName = controllerNameWithoutSuffix + ".view.xml",
-                searchString = "**/" + viewName;
+                searchString = "**" + viewName;
 
             vscode.workspace.findFiles(searchString).then((file) => {
                 if (file[0]) {
                     vscode.workspace.openTextDocument(file[0]).then((textDocument: vscode.TextDocument) => {
                         vscode.window.showTextDocument(textDocument, vscode.ViewColumn.Two, true);
+
                    });
                 }
             })
@@ -45,14 +65,14 @@ export function activate(context: vscode.ExtensionContext) {
             let viewName = this.getFileName(e.fileName),
                 viewNameWithoutSuffix = viewName.slice(0, viewName.length - 9),
                 controllerName = viewNameWithoutSuffix + ".controller.js",
-                searchString = "**/" + controllerName;
+                searchString = "*" + controllerName;
 
             vscode.workspace.findFiles(searchString).then((controllers) => {
                 if (controllers[0]) {
                     vscode.workspace.openTextDocument(controllers[0]).then((textDocument: vscode.TextDocument) => {
                         vscode.window.showTextDocument(textDocument, vscode.ViewColumn.One, true).then((editor) => {
                             vscode.window.showTextDocument(e,vscode.ViewColumn.Two, true).then((textEditor: vscode.TextEditor) => {
-                               /* for (var i = 0; i < vscode.window.visibleTextEditors.length; i++) {
+                                for (var i = 0; i < vscode.window.visibleTextEditors.length; i++) {
                                     debugger;
                                     vscode.workspace.textDocuments;
                                     if (vscode.window.visibleTextEditors[i].viewColumn === 1) {
@@ -60,15 +80,25 @@ export function activate(context: vscode.ExtensionContext) {
 
                                         }
                                     }
-                                } */
+                                } 
                             });
                         });
                         
                     });
                 }
             })
-        }
+        }*/
     });
+    this.shouldClose = function (textDocument: vscode.TextDocument) {
+        if (textDocument.fileName.endsWith(".view.xml")) {
+
+        }
+        vscode.window.visibleTextEditors.forEach((codeEditor, index, all) => {
+            if (codeEditor.document.fileName.includes("s1.view.xml")) {
+                codeEditor.hide();
+            }
+        });
+    }
 
     this.isController = function (textDocument: vscode.TextDocument) {
         if (textDocument.languageId === "javascript") {
