@@ -48,18 +48,18 @@ export function activate(context: vscode.ExtensionContext) {
         if (textDocument.fileName.endsWith(".view.xml")) {
             if (vscode.window.activeTextEditor.viewColumn === vscode.ViewColumn.One) {
                 vscode.commands.executeCommand("workbench.action.moveEditorToNextGroup").then(() => {
-                    let viewName = this.getFileName(textDocument.fileName),
+                /*    let viewName = this.getFileName(textDocument.fileName),
                         viewNameWithoutSuffix = viewName.slice(0, viewName.length - 9),
                         controllerName = viewNameWithoutSuffix + ".controller.js",
-                        searchString = "**/" + controllerName;
+                        searchString = "**" + controllerName;
 
                     vscode.workspace.findFiles(searchString).then((file) => {
                         if (file[0]) {
                             vscode.workspace.openTextDocument(file[0]).then((searchDoc: vscode.TextDocument) => {
-                                vscode.window.showTextDocument(searchDoc, vscode.ViewColumn.One, true);
+                                vscode.window.showTextDocument(searchDoc, vscode.ViewColumn.One, false);
                             });
                         }
-                    })
+                    })*/
                 });
 
 
@@ -67,18 +67,18 @@ export function activate(context: vscode.ExtensionContext) {
         }
         if (textDocument.fileName.endsWith(".controller.js")) {
             vscode.commands.executeCommand("workbench.action.moveEditorToPreviousGroup").then(() => {
-                let controllerName = this.getFileName(textDocument.fileName),
+                /*let controllerName = this.getFileName(textDocument.fileName),
                     controllerNameWithoutSuffix = controllerName.slice(0, controllerName.length - 14),
                     viewName = controllerNameWithoutSuffix + ".view.xml",
-                    searchString = "**/" + viewName;
+                    searchString = "**" + viewName;
 
                 vscode.workspace.findFiles(searchString).then((file) => {
                     if (file[0]) {
                         vscode.workspace.openTextDocument(file[0]).then((searchDoc: vscode.TextDocument) => {
-                            vscode.window.showTextDocument(searchDoc, vscode.ViewColumn.Two, true);
+                            vscode.window.showTextDocument(searchDoc, vscode.ViewColumn.Two, false);
                         });
                     }
-                })
+                })*/
             });
         }
 
